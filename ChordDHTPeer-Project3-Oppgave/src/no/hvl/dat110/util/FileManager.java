@@ -125,7 +125,7 @@ public class FileManager {
 		// it means, iterate over the replicas of the file
 		for(int i = 0; i < replicafiles.length; i++){
 			NodeInterface successor = chordnode.findSuccessor(replicafiles[i]);
-			succinfo.add(successor.getFilesMetadata(replicafiles[i]));
+			succinfo.add( successor.getFilesMetadata(replicafiles[i]));
 		}
 		// for each replica, do findSuccessor(replica) that returns successor s.
 		
