@@ -19,6 +19,7 @@ import java.util.Random;
 import java.util.Set;
 
 import no.hvl.dat110.middleware.Message;
+import no.hvl.dat110.middleware.Node;
 import no.hvl.dat110.rpc.interfaces.NodeInterface;
 import no.hvl.dat110.util.Hash;
 
@@ -70,20 +71,21 @@ public class FileManager {
 	
     /**
      * 
-     * @param bytesOfFile
+     *
      * @throws RemoteException 
      */
     public int distributeReplicastoPeers() throws RemoteException {
     	int counter = 0;
     	
     	// Task1: Given a filename, make replicas and distribute them to all active peers such that: pred < replica <= peer
-    	
+    	Random rnd = new Random();
+		int index = rnd.nextInt(Util.numReplicas-1);
     	// Task2: assign a replica as the primary for this file. Hint, see the slide (project 3) on Canvas
-    	
+
     	// create replicas of the filename
-    	
+    	createReplicaFiles();
 		// iterate over the replicas
-    	
+
     	// for each replica, find its successor by performing findSuccessor(replica)
     	
     	// call the addKey on the successor and add the replica
@@ -91,7 +93,17 @@ public class FileManager {
     	// call the saveFileContent() on the successor
     	
     	// increment counter
-    	
+		for(int i = 0; i < replicafiles.length; i++){
+			NodeInterface successor = chordnode.findSuccessor(replicafiles[i]);
+			successor.addKey(replicafiles[i]);
+			if(counter == index){
+				successor.saveFileContent(filename, successor.getNodeID(), bytesOfFile, true);
+			} else {
+				successor.saveFileContent(filename, successor.getNodeID(), bytesOfFile, false);
+			}
+
+			counter++;
+		}
     		
 		return counter;
     }
@@ -109,9 +121,12 @@ public class FileManager {
 		// Task: Given a filename, find all the peers that hold a copy of this file
 		
 		// generate the N replicas from the filename by calling createReplicaFiles()
-		
+		createReplicaFiles();
 		// it means, iterate over the replicas of the file
-		
+		for(int i = 0; i < replicafiles.length; i++){
+			NodeInterface successor = chordnode.findSuccessor(replicafiles[i]);
+			succinfo.add(successor.getFilesMetadata(replicafiles[i]));
+		}
 		// for each replica, do findSuccessor(replica) that returns successor s.
 		
 		// get the metadata (Message) of the replica from the successor, s (i.e. active peer) of the file
@@ -235,7 +250,7 @@ public class FileManager {
 		return sizeOfByte;
 	}
 	/**
-	 * @param size the size to set
+	 *
 	 */
 	public void setSizeOfByte(String sizeOfByte) {
 		this.sizeOfByte = sizeOfByte;
