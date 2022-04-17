@@ -50,7 +50,7 @@ public class Hash {
 		// compute the address size = 2 ^ number of bits
 		
 		// return the address size
-		BigInteger addressSize = BigInteger.valueOf((long) Math.pow(2, bitSize()));
+		BigInteger addressSize = BigInteger.valueOf(2).pow( bitSize());
 		return addressSize;
 	}
 	

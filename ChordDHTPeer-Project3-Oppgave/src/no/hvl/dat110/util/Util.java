@@ -37,16 +37,22 @@ public class Util {
 	 * @return true if (lower <= id <= upper) or false otherwise
 	 */
 	public static boolean computeLogic(BigInteger id, BigInteger lower, BigInteger upper) {
-		
+
 		// a formula to check whether an id falls within the set {lower, upper} using the address size as our bound (modulos operation)
 		// it modifies 'upper' and 'id' when lower > upper e.g. set (6, 2) in mod 10 = {6, 7, 8, 9, 0, 1, 2}
-		
-		// implement: read the descriptions above
-		boolean cond = false;
 
-		
-		return cond;
+		// implement: read the descriptions above
+
+		if(lower.compareTo(upper) > 0){
+			upper = upper.add(Hash.addressSize());
+			if(id.compareTo(lower) < 0){
+				id = id.add(Hash.addressSize());
+			}
+		}
+
+		return (id.compareTo(lower) >= 0 && id.compareTo(upper) <= 0);
 	}
+
 	
 	public static List<String> toString(List<NodeInterface> list) throws RemoteException {
 		List<String> nodestr = new ArrayList<String>();
