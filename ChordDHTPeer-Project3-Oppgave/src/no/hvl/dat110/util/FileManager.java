@@ -59,7 +59,7 @@ public class FileManager {
 		
 		// set a loop where size = numReplicas
 		for(int i = 0; i < numReplicas; i ++){
-			replicafiles[i] = Hash.hashOf(getFilename()+i);
+			replicafiles[i] = Hash.hashOf(filename+i);
 		}
 		// replicate by adding the index to filename
 
@@ -93,18 +93,14 @@ public class FileManager {
     	// call the saveFileContent() on the successor
     	
     	// increment counter
-		for(int i = 0; i < replicafiles.length; i++){
-			NodeInterface successor = chordnode.findSuccessor(replicafiles[i]);
-			successor.addKey(replicafiles[i]);
-			if(counter == index){
-				successor.saveFileContent(filename, successor.getNodeID(), bytesOfFile, true);
-			} else {
-				successor.saveFileContent(filename, successor.getNodeID(), bytesOfFile, false);
-			}
-
+		for(BigInteger key : replicafiles) {
+			NodeInterface successor = chordnode.findSuccessor(key);
+			successor.addKey(key);
+			successor.saveFileContent(filename, key, bytesOfFile, counter==index);
 			counter++;
 		}
-    		
+
+
 		return counter;
     }
 	
@@ -147,13 +143,22 @@ public class FileManager {
 		// Task: Given all the active peers of a file (activeNodesforFile()), find which is holding the primary copy
 		
 		// iterate over the activeNodesforFile
-		
+
 		// for each active peer (saved as Message)
 		
 		// use the primaryServer boolean variable contained in the Message class to check if it is the primary or not
-		
+
 		// return the primary
-		
+		Set<Message> activeNodes = getActiveNodesforFile();
+		for(Message message : activeNodes){
+			if(message.isPrimaryServer()){
+				try {
+					return chordnode.findSuccessor(message.getNodeID());
+				} catch (RemoteException e) {
+					e.printStackTrace();
+				}
+			}
+		}
 		return null; 
 	}
 	
